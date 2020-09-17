@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- styles -->
+    <link rel="stylesheet" href="styles.css" type="text/css">
+
+    <!-- scirpts -->
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/controler.js"></script>
+    <script src="js/path_finder.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/types_states_styles.js"></script>
+    <title>Path Finder</title>
+</head>
+<body>
+    <div id="grid"> </div>
+    <div id="panel" class="container">
+        <div class="container container-algo">
+            <label for="algo">Chose Algorithm:</label>
+            <div class="radio-element">
+                <input type="radio" name="algo" id="bfs" checked>
+                <label for="bfs">Breadth First Search</label>
+            </div>
+            <div class="radio-element">
+                <input type="radio" name="algo" id="dijkstra">
+                <label for="dijkstra">Dijkstra</label>
+            </div>
+        </div>
+        <div class="container container-btn">
+            <button class="btn btn-start-continue">Start</button>
+            <button class="btn btn-stop-cancel">Stop</button>
+
+            <button class="btn btn-clear">Clear walls</button>
+        </div>
+    </div>
+</body>
+</html>
