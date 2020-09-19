@@ -26,7 +26,8 @@ let Panel = {
         this.btn_stop_cancel
             .on('click', this.stopCancelCallback.bind(this));
         this.panel_drag
-            .on('mousedown', this.mouseDown.bind(this));
+            .on('mousedown', this.mouseDown.bind(this))
+            .on('touchstart', this.mouseDown.bind(this));
     },
     // Start-continue button callback
     startContinueCallback: function() {
@@ -56,14 +57,15 @@ let Panel = {
         this.posX = event.clientX;
         this.posY = event.clientY;
         document.onmousemove = this.mouseMove.bind(this);
+        document.ontouchmove = this.mouseMove.bind(this);
         document.onmouseup = this.mouseUp.bind(this);
+        document.ontouchend = this.mouseUp.bind(this);
     },
 
     mouseMove: function(event) {
         if (!this.flag_panel_drag) return;
         const x = parseInt(this.panel.style('right')) + (this.posX - event.pageX);
         const y = parseInt(this.panel.style('top')) + (event.pageY - this.posY);
-        console.log(x, y);
         this.panel
             .style('top', `${y}px`)
             .style('right', `${x}px`);
@@ -75,6 +77,8 @@ let Panel = {
         this.flag_panel_drag = false;
         document.onmousemove = null;
         document.onmouseup = null;
+        document.ontouchmove = null;
+        document.ontouchend = null;
     },
 
 

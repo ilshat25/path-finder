@@ -17,10 +17,10 @@ var Controler = {
         d3.selectAll('.rect')
           .on('mousedown', this.mouseDown.bind(this))
           .on('mouseover', this.mouseOver.bind(this))
-          .on('mouseup', this.mouseUp.bind(this));
-
-        d3.select('.click-me')
-          .on('click', this.startPathFinding);
+          .on('mouseup', this.mouseUp.bind(this))
+          .on('touchstart', this.mouseDown.bind(this))
+          .on('touchmove', this.mouseOver.bind(this))
+          .on('touchend', this.mouseUp.bind(this));
     },
 
 
@@ -107,9 +107,15 @@ var Controler = {
     // MouseDown callback for rect
     mouseDown: function(event) {
         if (this.block_interaction) return;
+        if (event instanceof TouchEvent) {
+            event = event.touches[0];
+            console.log('Touch start')
+        }
+        else {
+            console.log('Mouse down');
+        }
         const i = Grid.convertToGridCords(event.pageX);
         const j = Grid.convertToGridCords(event.pageY);
-
         const rect_type = Grid.getType(i, j);
 
         if (rect_type == Types.free){
@@ -129,6 +135,13 @@ var Controler = {
     // MouseOver callback for rect
     mouseOver: function(event) {
         if (this.block_interaction) return;
+        if (event instanceof TouchEvent){
+            event = event.touches[0];
+            console.log('Touch move');
+        }
+        else {
+            console.log('Mouse move');
+        }
         const i = Grid.convertToGridCords(event.pageX);
         const j = Grid.convertToGridCords(event.pageY);
 
@@ -152,6 +165,11 @@ var Controler = {
     },
     // MouseUp callback for rect
     mouseUp: function(event) {
+        if (event instanceof TouchEvent){
+            console.log('Touch end');
+        }
+        else
+            console.log('Mouse Up');
         if (this.block_interaction) return;
         this.changeState(States.default);
     },
