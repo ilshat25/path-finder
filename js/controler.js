@@ -3,6 +3,9 @@ var Controler = {
     init: function() {
         this.current_state = States.default;
 
+        this.max_path_finding_speed = 200;
+        this.path_finding_speed = 100;
+
         this.block_interaction = false;
         this.stop_path_finding = false;
         this.cancel_path_finding = false;
@@ -17,10 +20,9 @@ var Controler = {
         d3.selectAll('.rect')
           .on('mousedown', this.mouseDown.bind(this))
           .on('mouseover', this.mouseOver.bind(this))
-          .on('mouseup', this.mouseUp.bind(this))
-          .on('touchstart', this.mouseDown.bind(this))
-          .on('touchmove', this.mouseOver.bind(this))
-          .on('touchend', this.mouseUp.bind(this));
+          .on('mouseup', this.mouseUp.bind(this));
+        d3.select('#speed')
+          .on('change', this.changeSpeed.bind(this));
     },
 
 
@@ -67,7 +69,7 @@ var Controler = {
         for (let added of PathFinder.breadthFistSearch(Matrix)) {
             Grid.updateGrid(added);
             do {
-                await sleep(100);
+                await sleep(this.path_finding_speed);
                 if (this.getState() == States.path_building_canceled){
                     this.changeState(States.path_building_end);
                     return;
@@ -107,13 +109,6 @@ var Controler = {
     // MouseDown callback for rect
     mouseDown: function(event) {
         if (this.block_interaction) return;
-        if (event instanceof TouchEvent) {
-            event = event.touches[0];
-            console.log('Touch start')
-        }
-        else {
-            console.log('Mouse down');
-        }
         const i = Grid.convertToGridCords(event.pageX);
         const j = Grid.convertToGridCords(event.pageY);
         const rect_type = Grid.getType(i, j);
@@ -135,13 +130,6 @@ var Controler = {
     // MouseOver callback for rect
     mouseOver: function(event) {
         if (this.block_interaction) return;
-        if (event instanceof TouchEvent){
-            event = event.touches[0];
-            console.log('Touch move');
-        }
-        else {
-            console.log('Mouse move');
-        }
         const i = Grid.convertToGridCords(event.pageX);
         const j = Grid.convertToGridCords(event.pageY);
 
@@ -165,12 +153,11 @@ var Controler = {
     },
     // MouseUp callback for rect
     mouseUp: function(event) {
-        if (event instanceof TouchEvent){
-            console.log('Touch end');
-        }
-        else
-            console.log('Mouse Up');
         if (this.block_interaction) return;
         this.changeState(States.default);
     },
+    // Change speed callback of path finding
+    changeSpeed: function(event) {
+        this.path_finding_speed = this.max_path_finding_speed - event.target.value;
+    }
 }
