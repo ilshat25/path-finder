@@ -65,8 +65,8 @@ var Controler = {
         Panel.startPathFinding();
 
         let Matrix = Grid.getMatrix();
-        
-        for (let added of PathFinder.breadthFistSearch(Matrix)) {
+
+        for (let added of Panel.algo(Matrix)) {
             Grid.updateGrid(added);
             do {
                 await sleep(this.path_finding_speed);

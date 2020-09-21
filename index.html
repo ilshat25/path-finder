@@ -15,6 +15,7 @@
     <script src="js/path_finder.js"></script>
     <script src="js/panel.js"></script>
     <script src="js/types_states_styles.js"></script>
+    <script src="js/priority_queue.js"></script>
     <title>Path Finder</title>
 </head>
 <body>
@@ -26,12 +27,12 @@
         <div class="container container-algo">
             <label for="algo">Chose Algorithm:</label>
             <div class="radio-element">
-                <input type="radio" name="algo" id="bfs" checked>
+                <input type="radio" name="algo" id="bfs" data-algo="bfs" checked>
                 <label for="bfs">Breadth First Search</label>
             </div>
             <div class="radio-element">
-                <input type="radio" name="algo" id="dijkstra">
-                <label for="dijkstra">Dijkstra</label>
+                <input type="radio" name="algo" id="astar" data-algo="astar">
+                <label for="astar">A*</label>
             </div>
         </div>
         <div class="container container-btn">
@@ -40,7 +41,7 @@
 
             <button class="btn btn-clear">Clear walls</button>
             <label for="speed">Speed:</label>
-            <input type="range" min="1" max="200" name="speed" id="speed" value="100">
+            <input type="range" min="0" max="200" name="speed" id="speed" value="100">
         </div>
     </div>
 </body>

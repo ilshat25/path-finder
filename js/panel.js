@@ -10,6 +10,10 @@ let Panel = {
         this.btn_clear = d3.select('.btn-clear');
         this.btn_start_continue = d3.select('.btn-start-continue');
         this.btn_stop_cancel = d3.select('.btn-stop-cancel');
+        this.btns_radio = d3.selectAll('input[type=radio]');
+
+        this.algo = PathFinder.breadthFistSearch.bind(PathFinder);
+
         this.bindCallbacks();
 
         this.deactivateStopCancel();
@@ -27,6 +31,8 @@ let Panel = {
             .on('click', this.stopCancelCallback.bind(this));
         this.panel_drag
             .on('mousedown', this.mouseDown.bind(this));
+        this.btns_radio
+            .on('click', this.radioCallback.bind(this));    
     },
     // Start-continue button callback
     startContinueCallback: function() {
@@ -49,6 +55,19 @@ let Panel = {
                 Controler.cancelPathFinding();
                 break;
         };
+    },
+    // Radio button callback
+    radioCallback: function(event) {
+        const target = event.currentTarget;
+        console.log(target);
+        switch(target.dataset.algo) {
+            case 'bfs':
+                this.algo = PathFinder.breadthFistSearch.bind(PathFinder);
+                break;
+            case 'astar':
+                this.algo = PathFinder.aStar.bind(PathFinder);
+                break;
+        }
     },
     // Drag panel callback
     mouseDown: function(event) {

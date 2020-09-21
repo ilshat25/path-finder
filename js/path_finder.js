@@ -1,3 +1,5 @@
+// const PriorityQueue = require("./priority_queue.");
+
 var PathFinder = {
     di: [0, 1, 0, -1],
     dj: [-1, 0, 1, 0],
@@ -47,6 +49,54 @@ var PathFinder = {
                     Matrix[ii][jj] = Types.checked;
                     ancestors[ii][jj] = [i, j];
                     queue.push([ii, jj, dist + 1]);
+                }
+            }
+        }
+        yield added;
+    },
+    aStar: function* (Matrix) {
+        this.processInputMatrix(Matrix);
+
+        Matrix = this.Matrix;
+        const matrix_height = Matrix.length;
+        const matrix_width = Matrix[0].length;
+        const di = this.di;
+        const dj = this.dj;
+        const start_point = this.start_point;
+        const end_point = this.end_point;
+
+        let ancestors = this.ancestors = Array(matrix_height).fill().map(
+            ()=>Array(matrix_width).fill());
+        let added = [];
+        let queue = new PriorityQueue({comparator: (a, b) => { return a[0] - b[0]; }});
+        queue.queue([Math.pow(end_point[0] - start_point[0], 2) + Math.pow(end_point[1] - start_point[1], 2),
+                    0,
+                    start_point[0],
+                    start_point[1]]);
+        while(queue.length) {
+            let [f, g, i, j] = queue.dequeue();
+            
+            if (i == end_point[0] && j == end_point[1])
+                break;
+            if (i != start_point[0] || j != start_point[1]) {
+                added.push([i, j]);
+                yield added;
+                added = [];
+            }
+            for (let k = 0; k < 4; ++k) {
+                const ii = i + di[k];
+                const jj = j + dj[k];
+                if (ii == end_point[0] && jj == end_point[1]){
+                    ancestors[ii][jj] = [i, j];
+                    queue.queue([g + 1, g + 1, ii, jj]);
+                }
+                if (ii >= 0 && ii < matrix_height &&
+                    jj >= 0 && jj < matrix_width && 
+                    Matrix[ii][jj] == Types.free) {
+                    Matrix[ii][jj] = Types.checked;
+                    ancestors[ii][jj] = [i, j];
+                    queue.queue([g + 1 + Math.pow(end_point[0] - ii, 2) + Math.pow(end_point[1] - jj, 2),
+                                 g + 1, ii, jj]);
                 }
             }
         }
