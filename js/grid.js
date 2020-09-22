@@ -35,10 +35,11 @@ var Grid = {
     },
     // Make the cell checked
     setChecked: function(i, j) {
-        this.changeType(i, j, Types.cur_checked);
+        if (this.getType(i, j) != Types.start_point && this.getType(i, j) != Types.end_point)
+            this.changeType(i, j, Types.checked);
         let neighbors = this.getNeighbors(i, j);
-        for(neighbor of neighbors) if (neighbor.type == Types.cur_checked)
-            this.changeType(neighbor.i, neighbor.j, Types.checked);
+        for(neighbor of neighbors) if (neighbor.type == Types.free)
+            this.changeType(neighbor.i, neighbor.j, Types.cur_checked);
     },
     // Get neighbors cells
     getNeighbors: function(i, j) {

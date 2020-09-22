@@ -10,7 +10,7 @@
     <script src="https://kit.fontawesome.com/04646c20df.js" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v6.js"></script>
     <script src="js/core/constants.js"></script>
-    <script src="js/core/priority_queue.js"></script>
+    <script src="js/core/heap.js"></script>
     <script src="js/core/util.js"></script>
     <script src="js/main.js"></script>
     <script src="js/grid.js"></script>
@@ -29,11 +29,23 @@
             <label for="algo">Chose Algorithm:</label>
             <div class="radio-element">
                 <input type="radio" name="algo" id="bfs" data-algo="bfs" checked>
-                <label for="bfs">Breadth First Search</label>
+                <label for="bfs">BFS</label>
             </div>
             <div class="radio-element">
-                <input type="radio" name="algo" id="astar" data-algo="astar">
-                <label for="astar">A*</label>
+                <input type="radio" name="algo" id="greedy-bfs-manhattan" data-algo="greedy-bfs-manhattan">
+                <label for="greedy-bfs-manhattan">Greedy BFS (Manhattan heuristic)</label>
+            </div>
+            <div class="radio-element">
+                <input type="radio" name="algo" id="greedy-bfs-euclidean" data-algo="greedy-bfs-euclidean">
+                <label for="greedy-bfs-euclidean">Greedy BFS (Euclidean heuristic)</label>
+            </div>
+            <div class="radio-element">
+                <input type="radio" name="algo" id="astar-manhattan" data-algo="astar-manhattan">
+                <label for="astar-manhattan">A* (Manhattan heuristic)</label>
+            </div>
+            <div class="radio-element">
+                <input type="radio" name="algo" id="astar-euclidean" data-algo="astar-euclidean">
+                <label for="astar-euclidean">A* (Euclidean heuristic)</label>
             </div>
         </div>
         <div class="container container-btn">
@@ -42,7 +54,7 @@
 
             <button class="btn btn-clear">Clear walls</button>
             <label for="speed">Speed:</label>
-            <input type="range" min="0" max="20" name="speed" id="speed" value="10">
+            <input type="range" min="0" max="50" name="speed" id="speed" value="25">
         </div>
     </div>
 </body>

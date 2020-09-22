@@ -3,8 +3,8 @@ var Controler = {
     init: function() {
         this.current_state = States.default;
 
-        this.max_path_finding_speed = 20;
-        this.path_finding_speed = 10;
+        this.max_path_finding_speed = 50;
+        this.path_finding_speed = 25;
 
         this.block_interaction = false;
         this.stop_path_finding = false;

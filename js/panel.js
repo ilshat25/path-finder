@@ -56,13 +56,21 @@ let Panel = {
     // Radio button callback
     radioCallback: function(event) {
         const target = event.currentTarget;
-        console.log(target);
         switch(target.dataset.algo) {
             case 'bfs':
                 this.algo = PathFinder.breadthFistSearch.bind(PathFinder);
                 break;
-            case 'astar':
-                this.algo = PathFinder.aStar.bind(PathFinder);
+            case 'greedy-bfs-manhattan':
+                this.algo = PathFinder.greedyBreadthFistSearch.bind(PathFinder, 'manhattan');
+                break;
+            case 'greedy-bfs-euclidean':
+                this.algo = PathFinder.greedyBreadthFistSearch.bind(PathFinder, 'euclidean');
+                break;
+            case 'astar-manhattan':
+                this.algo = PathFinder.aStar.bind(PathFinder, 'manhattan');
+                break;
+            case 'astar-euclidean':
+                this.algo = PathFinder.aStar.bind(PathFinder, 'euclidean');
                 break;
         }
     },
