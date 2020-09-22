@@ -1,16 +1,18 @@
-// Responsive for window grid
+// Representation of window grid
 var Grid = {
-    // Initialization of grid
+    // Initialization function
     init: function() {
         const grid_width = this.grid_width = 64;
         const grid_height = this.grid_height = 36;
         const tile_size = this.tile_size = 30;
+
         let arr = this.arr = [];
         let svg = this.svg = d3.select('#grid')
                            .append('svg')
                            .attr('width', this.convertToWindowCords(grid_width))
                            .attr('height', this.convertToWindowCords(grid_height));
-                      
+        
+        // Create grid
         for (let i = 0; i < grid_height; ++i){
             arr.push([]);
             for (let j = 0; j < grid_width; ++j) {
@@ -26,6 +28,7 @@ var Grid = {
             }
         }
 
+        // Attach attributes to cells
         svg.selectAll('rect')
            .attr('class', 'rect')
            .attr('width', tile_size)
@@ -37,7 +40,9 @@ var Grid = {
     setChecked: function(i, j) {
         if (this.getType(i, j) != Types.start_point && this.getType(i, j) != Types.end_point)
             this.changeType(i, j, Types.checked);
+        
         let neighbors = this.getNeighbors(i, j);
+        // Change state of neighbor cells to cur checked
         for(neighbor of neighbors) if (neighbor.type == Types.free)
             this.changeType(neighbor.i, neighbor.j, Types.cur_checked);
     },
@@ -114,14 +119,15 @@ var Grid = {
         this.changeType(i, j, Types.end_point);
         this.end_point = this.arr[i][j];
     },
-    // Get rect
+    // Get a rect of cell according to coordinates
     getRect: function(i, j) {
         return this.arr[i][j].rect;
     },
+    // Get a type of cell according to coordinates
     getType: function(i, j) {
         return this.arr[i][j].type;
     },
-    // Chanages the type of the rect
+    // Chanages the type of the cell
     changeType: function(i, j, t) {
         let rect = this.arr[i][j];
         if (rect.type == t) return;

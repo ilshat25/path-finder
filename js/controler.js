@@ -1,17 +1,20 @@
-// Controler for the project
+// Control project states
 var Controler = {
+    // Initialization function
     init: function() {
         this.current_state = States.default;
 
         this.max_path_finding_speed = 50;
         this.path_finding_speed = 25;
 
+        // Path finding flags
         this.block_interaction = false;
         this.stop_path_finding = false;
         this.cancel_path_finding = false;
 
         this.bindCallbacks();
 
+        // Sets start and end points
         Grid.setStartPoint(0, 0);
         Grid.setEndPoint(1, 1);
     },
@@ -25,7 +28,6 @@ var Controler = {
           .on('change', this.changeSpeed.bind(this));
     },
 
-
     // Get state of the project
     getState: function() {
         return this.current_state;
@@ -35,6 +37,7 @@ var Controler = {
         const previous_state = this.current_state;
         const current_state = this.current_state = state;
 
+        // Actions according to old state
         switch (previous_state) {
             case States.path_building_end:
                 Grid.clearChecked();
@@ -44,6 +47,7 @@ var Controler = {
                 break;
         };
 
+        // Actions according to new state
         switch (current_state) {
             case States.path_building_start:
                 this.blockInteraction(true);
@@ -101,6 +105,7 @@ var Controler = {
         const j = Grid.convertToGridCords(event.pageX);
         const rect_type = Grid.getType(i, j);
 
+        // Change state according to target rect
         if (rect_type == Types.free){
             Grid.changeType(i, j, Types.blocked);
             this.changeState(States.put_wall);

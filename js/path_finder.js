@@ -1,5 +1,6 @@
-
+// Algorithms to path finding
 var PathFinder = {
+    // BFS
     breadthFistSearch: async function () {
         const start_point = this.start_point = Grid.start_point;
         const end_point = this.end_point = Grid.end_point;
@@ -37,6 +38,7 @@ var PathFinder = {
         }
         }
     },
+    // Greedy BFS (manhattan or euclidean heuristic)
     greedyBreadthFistSearch: async function(heuristic = 'manhattan') {
         const start_point = this.start_point = Grid.start_point;
         const end_point = this.end_point = Grid.end_point;
@@ -90,6 +92,7 @@ var PathFinder = {
                 }
         }
     },
+    // A* (manhattan or euclidean heuristic)
     aStar: async function(heuristic = 'manhattan') {
         const start_point = this.start_point = Grid.start_point;
         const end_point = this.end_point = Grid.end_point;
@@ -145,13 +148,13 @@ var PathFinder = {
                 }
         }
     },
-    // Sets pause betwee checking values or stops path finding
+    // Pause path finding
     pause: async function() {
         do {
             await sleep(Controler.path_finding_speed);
         } while(Controler.getState() == States.path_building_stopped)
     },
-    // Check if end_point was reached
+    // Check if the end_point was reached
     isSuccess: function() {
         return this.ancestors[this.end_point.i][this.end_point.j];
     },

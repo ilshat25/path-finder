@@ -1,3 +1,6 @@
+// constants.js - main constants of the project
+
+// Types of the cells
 let Types = {
     free: 0,
     blocked: 1,
@@ -7,6 +10,7 @@ let Types = {
     cur_checked: 5
 };
 
+// States of the project
 let States = {
     default: 0,
     put_wall: 1,
@@ -20,6 +24,8 @@ let States = {
     path_building_end: 9,
 };
 
+// Styles of the cells,
+// the number in the array corresponds to the type number
 let Styles = [
     {   // 0 : free
         fill: 'white',

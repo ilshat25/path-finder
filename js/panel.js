@@ -1,7 +1,11 @@
-
+// Representation of control panel
 let Panel = {
+    // Initialization function
     init: function() {
+        // Path finding flag
         this.stop_path_finding = false;
+        
+        // Get DOM elements
         this.panel = d3.select('#panel');
         this.panel_drag = d3.select('.panel-drag');
         this.btn_clear = d3.select('.btn-clear');
@@ -9,13 +13,14 @@ let Panel = {
         this.btn_stop_cancel = d3.select('.btn-stop-cancel');
         this.btns_radio = d3.selectAll('input[type=radio]');
 
+        // Algorith for path finding, simple bfs default
         this.algo = PathFinder.breadthFistSearch.bind(PathFinder);
 
         this.bindCallbacks();
 
         this.deactivateStopCancel();
     },
-    // binds all callbacks
+    // Binds all callbacks
     bindCallbacks: function() {
         // Clear grid button
         this.btn_clear
@@ -26,8 +31,10 @@ let Panel = {
         // Stop and cancel
         this.btn_stop_cancel
             .on('click', this.stopCancelCallback.bind(this));
+        // Drag pandel
         this.panel_drag
             .on('mousedown', this.mouseDown.bind(this));
+        // Choose algorithm
         this.btns_radio
             .on('click', this.radioCallback.bind(this));    
     },
@@ -86,7 +93,7 @@ let Panel = {
         document.onmousemove = this.mouseMove.bind(this);
         document.onmouseup = this.mouseUp.bind(this);
     },
-
+    // Panel move callback
     mouseMove: function(event) {
         if (!this.flag_panel_drag) return;
         const x = parseInt(this.panel.style('right')) + (this.posX - event.pageX);
@@ -97,7 +104,7 @@ let Panel = {
         this.posX = event.pageX;
         this.posY = event.pageY;
     },
-
+    // Panel stay callback
     mouseUp: function() {
         this.flag_panel_drag = false;
         document.onmousemove = null;
