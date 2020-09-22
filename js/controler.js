@@ -3,8 +3,8 @@ var Controler = {
     init: function() {
         this.current_state = States.default;
 
-        this.max_path_finding_speed = 200;
-        this.path_finding_speed = 100;
+        this.max_path_finding_speed = 20;
+        this.path_finding_speed = 10;
 
         this.block_interaction = false;
         this.stop_path_finding = false;
@@ -35,8 +35,6 @@ var Controler = {
         const previous_state = this.current_state;
         const current_state = this.current_state = state;
 
-        console.log('Change state from ', previous_state, ' to ', current_state);
-
         switch (previous_state) {
             case States.path_building_end:
                 Grid.clearChecked();
@@ -64,18 +62,8 @@ var Controler = {
         this.changeState(States.path_building_start);
         Panel.startPathFinding();
 
-        let Matrix = Grid.getMatrix();
-
-        for (let added of Panel.algo(Matrix)) {
-            Grid.updateGrid(added);
-            do {
-                await sleep(this.path_finding_speed);
-                if (this.getState() == States.path_building_canceled){
-                    this.changeState(States.path_building_end);
-                    return;
-                }
-            } while (this.getState() == States.path_building_stopped);
-        }
+        let algo = Panel.getAlgo();
+        await algo();
 
         if (PathFinder.isSuccess()){
             const path = PathFinder.getPath();
@@ -109,8 +97,8 @@ var Controler = {
     // MouseDown callback for rect
     mouseDown: function(event) {
         if (this.block_interaction) return;
-        const i = Grid.convertToGridCords(event.pageX);
-        const j = Grid.convertToGridCords(event.pageY);
+        const i = Grid.convertToGridCords(event.pageY);
+        const j = Grid.convertToGridCords(event.pageX);
         const rect_type = Grid.getType(i, j);
 
         if (rect_type == Types.free){
@@ -130,8 +118,8 @@ var Controler = {
     // MouseOver callback for rect
     mouseOver: function(event) {
         if (this.block_interaction) return;
-        const i = Grid.convertToGridCords(event.pageX);
-        const j = Grid.convertToGridCords(event.pageY);
+        const i = Grid.convertToGridCords(event.pageY);
+        const j = Grid.convertToGridCords(event.pageX);
 
         const rect_type = Grid.getType(i, j);
         if (this.current_state == States.put_wall && 
@@ -159,5 +147,6 @@ var Controler = {
     // Change speed callback of path finding
     changeSpeed: function(event) {
         this.path_finding_speed = this.max_path_finding_speed - event.target.value;
+        console.log(this.path_finding_speed);
     }
 }

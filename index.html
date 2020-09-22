@@ -9,13 +9,14 @@
     <!-- scirpts -->
     <script src="https://kit.fontawesome.com/04646c20df.js" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="js/core/constants.js"></script>
+    <script src="js/core/priority_queue.js"></script>
+    <script src="js/core/util.js"></script>
     <script src="js/main.js"></script>
     <script src="js/grid.js"></script>
     <script src="js/controler.js"></script>
     <script src="js/path_finder.js"></script>
     <script src="js/panel.js"></script>
-    <script src="js/types_states_styles.js"></script>
-    <script src="js/priority_queue.js"></script>
     <title>Path Finder</title>
 </head>
 <body>
@@ -41,7 +42,7 @@
 
             <button class="btn btn-clear">Clear walls</button>
             <label for="speed">Speed:</label>
-            <input type="range" min="0" max="200" name="speed" id="speed" value="100">
+            <input type="range" min="0" max="20" name="speed" id="speed" value="10">
         </div>
     </div>
 </body>

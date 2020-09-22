@@ -1,6 +1,3 @@
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 let Panel = {
     init: function() {
@@ -68,6 +65,10 @@ let Panel = {
                 this.algo = PathFinder.aStar.bind(PathFinder);
                 break;
         }
+    },
+    // Returns algo to path finding
+    getAlgo: function() {
+        return this.algo;
     },
     // Drag panel callback
     mouseDown: function(event) {

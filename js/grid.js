@@ -11,16 +11,18 @@ var Grid = {
                            .attr('width', this.convertToWindowCords(grid_width))
                            .attr('height', this.convertToWindowCords(grid_height));
                       
-        for (let i = 0; i < grid_width; ++i){
+        for (let i = 0; i < grid_height; ++i){
             arr.push([]);
-            for (let j = 0; j < grid_height; ++j) {
+            for (let j = 0; j < grid_width; ++j) {
                 let rect = svg.append('rect')
-                   .attr('x', this.convertToWindowCords(i))
-                   .attr('y', this.convertToWindowCords(j))
+                   .attr('x', this.convertToWindowCords(j))
+                   .attr('y', this.convertToWindowCords(i));
                 
                 arr[i].push({
                     rect: rect,
-                    type: Types.free});
+                    type: Types.free,
+                    i: i,
+                    j: j});
             }
         }
 
@@ -31,16 +33,26 @@ var Grid = {
            .attr('fill', Styles[Types.free].fill)
            .attr('stroke-opacity', 0.2);    
     },
-    // Returns Matrix in PathFinder format
-    getMatrix: function() {
-        Matrix = [];
-        this.arr.forEach( (a, i) => {
-            Matrix.push([]);
-            a.forEach( (element, j) => {
-                Matrix[i].push(this.getType(i, j));
-            })
-        });
-        return Matrix;
+    // Make the cell checked
+    setChecked: function(i, j) {
+        this.changeType(i, j, Types.cur_checked);
+        let neighbors = this.getNeighbors(i, j);
+        for(neighbor of neighbors) if (neighbor.type == Types.cur_checked)
+            this.changeType(neighbor.i, neighbor.j, Types.checked);
+    },
+    // Get neighbors cells
+    getNeighbors: function(i, j) {
+        let neighbors = [];
+        const di = [-1, 0, 1, 0];
+        const dj = [0, 1, 0, -1];
+        for (let k = 0; k < 4; ++k) {
+            const ii = i + di[k];
+            const jj = j + dj[k];
+            if (ii >= 0 && ii < this.grid_height &&
+                jj >= 0 && jj < this.grid_width)
+                neighbors.push(this.arr[ii][jj]);
+        }
+        return neighbors;
     },
     // Set all rect with type from types_to_clear to default 
     clear: function(types_to_clear) {
@@ -67,19 +79,6 @@ var Grid = {
         this.clear([Types.checked,
                     Types.cur_checked]);
     },
-    // Update grid according to given array of indexes
-    updateGrid: function(added) {
-        if(this.added_prev) {
-            this.added_prev.forEach(index => {
-                this.changeType(index[0], index[1], Types.checked);
-            });
-        }
-        added.forEach(index => {
-            this.changeType(index[0], index[1], Types.cur_checked);
-        });
-
-        this.added_prev = added;
-    },
     // Build path according to path array
     buildPath: function(path) {
         path.forEach(pos => {
@@ -97,8 +96,8 @@ var Grid = {
     // Set start point
     setStartPoint: function(i, j) {
         if(this.start_point){
-            const old_i = this.convertToGridCords(this.start_point.rect.attr('x'));
-            const old_j = this.convertToGridCords(this.start_point.rect.attr('y'));
+            const old_i = this.start_point.i;
+            const old_j = this.start_point.j;
             this.changeType(old_i, old_j, Types.free);
         }
         this.changeType(i, j, Types.start_point);
@@ -107,8 +106,8 @@ var Grid = {
     // set end point
     setEndPoint: function(i, j) {
         if (this.end_point) {
-            const old_i = this.convertToGridCords(this.end_point.rect.attr('x'));
-            const old_j = this.convertToGridCords(this.end_point.rect.attr('y'));
+            const old_i = this.end_point.i;
+            const old_j = this.end_point.j;
             this.changeType(old_i, old_j, Types.free);
         }
         this.changeType(i, j, Types.end_point);

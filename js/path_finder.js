@@ -1,142 +1,100 @@
-// const PriorityQueue = require("./priority_queue.");
 
 var PathFinder = {
-    di: [0, 1, 0, -1],
-    dj: [-1, 0, 1, 0],
+    breadthFistSearch: async function () {
+        const start_point = this.start_point = Grid.start_point;
+        const end_point = this.end_point = Grid.end_point;
 
-    breadthFistSearch: function* (Matrix) {
-        this.processInputMatrix(Matrix);        
+        let ancestors = this.ancestors = Array(Grid.grid_height).fill().map(
+            ()=>Array(Grid.grid_width).fill());
 
-        Matrix = this.Matrix;
-        const matrix_height = Matrix.length;
-        const matrix_width = Matrix[0].length;
-        const di = this.di;
-        const dj = this.dj;
-        const start_point = this.start_point;
-        const end_point = this.end_point;
-
-        let ancestors = this.ancestors = Array(matrix_height).fill().map(
-            ()=>Array(matrix_width).fill());
-
-        let queue_height = 0, current_dist = 0;
-        let queue = [start_point.concat(0)];
-        let added = []
-        let flag = false;
+        let queue_height = 0;
+        let queue = [start_point];
 
         while(queue_height < queue.length) {
-            let [i, j, dist] = queue[queue_height++];
-            if(dist > current_dist) {
-                if (flag) break;
-                yield added;
-                ++current_dist;
-                added = []
-            }
-            if (i == end_point[0] && j == end_point[1])
-                    flag = true;
-            else if (i != start_point[0] || j != start_point[1])
-                added.push([i, j]);
+            const cell = queue[queue_height++];
             
-            for (let k = 0; k < 4; ++k){
-                const ii = i + di[k];
-                const jj = j + dj[k];
-                if (ii == end_point[0] && jj == end_point[1]){
-                    ancestors[ii][jj] = [i, j];
-                    queue.push([ii, jj, dist + 1]);
-                }
-                if (ii >= 0 && ii < matrix_height &&
-                    jj >= 0 && jj < matrix_width && 
-                    Matrix[ii][jj] == Types.free) {
-                    Matrix[ii][jj] = Types.checked;
-                    ancestors[ii][jj] = [i, j];
-                    queue.push([ii, jj, dist + 1]);
-                }
-            }
-        }
-        yield added;
-    },
-    aStar: function* (Matrix) {
-        this.processInputMatrix(Matrix);
-
-        Matrix = this.Matrix;
-        const matrix_height = Matrix.length;
-        const matrix_width = Matrix[0].length;
-        const di = this.di;
-        const dj = this.dj;
-        const start_point = this.start_point;
-        const end_point = this.end_point;
-
-        let ancestors = this.ancestors = Array(matrix_height).fill().map(
-            ()=>Array(matrix_width).fill());
-        let added = [];
-        let queue = new PriorityQueue({comparator: (a, b) => { return a[0] - b[0]; }});
-        queue.queue([Math.pow(end_point[0] - start_point[0], 2) + Math.pow(end_point[1] - start_point[1], 2),
-                    0,
-                    start_point[0],
-                    start_point[1]]);
-        while(queue.length) {
-            let [f, g, i, j] = queue.dequeue();
-            
-            if (i == end_point[0] && j == end_point[1])
+            if (cell.type == Types.end_point)
                 break;
-            if (i != start_point[0] || j != start_point[1]) {
-                added.push([i, j]);
-                yield added;
-                added = [];
+
+            for (let neighbor of Grid.getNeighbors(cell.i, cell.j)) {
+                const ii = neighbor.i;
+                const jj = neighbor.j;
+                if (neighbor.type == Types.free){
+                    Grid.setChecked(ii, jj);
+                    ancestors[ii][jj] = [cell.i, cell.j];
+                    queue.push(neighbor);
+                }
+                else if (neighbor.type == Types.end_point){
+                    ancestors[ii][jj] = [cell.i, cell.j];
+                    queue.push(neighbor);
+                }
             }
-            for (let k = 0; k < 4; ++k) {
-                const ii = i + di[k];
-                const jj = j + dj[k];
-                if (ii == end_point[0] && jj == end_point[1]){
-                    ancestors[ii][jj] = [i, j];
-                    queue.queue([g + 1, g + 1, ii, jj]);
-                }
-                if (ii >= 0 && ii < matrix_height &&
-                    jj >= 0 && jj < matrix_width && 
-                    Matrix[ii][jj] == Types.free) {
-                    Matrix[ii][jj] = Types.checked;
-                    ancestors[ii][jj] = [i, j];
-                    queue.queue([g + 1 + Math.pow(end_point[0] - ii, 2) + Math.pow(end_point[1] - jj, 2),
-                                 g + 1, ii, jj]);
-                }
+            await this.pause();
+            if (Controler.getState() == States.path_building_canceled)
+                break;
+        }
+    },
+    aStar: async function() {
+        const start_point = this.start_point = Grid.start_point;
+        const end_point = this.end_point = Grid.end_point;
+        const heuristic = (dx, dy) => { return dx + dy; } 
+        const abs = Math.abs;
+
+        let ancestors = this.ancestors = Array(Grid.grid_height).fill().map(
+            ()=>Array(Grid.grid_width).fill());
+
+        let queue = new PriorityQueue({comparator: (a, b) => { return a[0] - b[0]; }});
+        queue.queue([heuristic(abs(end_point.i - start_point.i), abs(end_point.j - start_point.j)),
+                     0,
+                     start_point]);
+        
+        while(queue.length) {
+            let [f, g, cell] = queue.dequeue();
+            
+            if (cell.type == Types.end_point)
+                break;
+            else if (cell.type != Types.start_point)
+                Grid.setChecked(cell.i, cell.j);
+
+            await this.pause();
+            if (Controler.getState() == States.path_building_canceled)
+                break;
+
+            for(const neighbor of Grid.getNeighbors(cell.i, cell.j)){
+                const ii = neighbor.i;
+                const jj = neighbor.j;
+                if (neighbor.type == Types.free || neighbor.type == Types.end_point) 
+                    if(!ancestors[ii][jj]) {
+                        queue.queue([g + 1 + heuristic(abs(end_point.i - ii), abs(end_point.j - jj)),
+                                    g + 1, 
+                                    neighbor]);
+                        ancestors[ii][jj] = [cell.i, cell.j];
+                    }
             }
         }
-        yield added;
+    },
+    // Sets pause betwee checking values or stops path finding
+    pause: async function() {
+        do {
+            await sleep(Controler.path_finding_speed);
+        } while(Controler.getState() == States.path_building_stopped)
     },
     // Check if end_point was reached
     isSuccess: function() {
-        return this.end_point != undefined;
+        return this.ancestors[this.end_point.i][this.end_point.j];
     },
     // Return path from start_point to end_point
     getPath: function() {
-        const start_point = this.start_point;
-        const end_point = this.end_point;
         const ancestors = this.ancestors;
 
         let path = []
-        let cur_point = end_point.slice();
-        path.push(end_point);
+        let cur_point = [this.end_point.i, this.end_point.j];
+        path.push(cur_point);
         while(ancestors[cur_point[0]][cur_point[1]]) {
             cur_point = ancestors[cur_point[0]][cur_point[1]].slice();
             path.push(cur_point);
         }
-
+        path.map(arr => arr = arr.reverse());
         return path.reverse();
     },
-    // Copy Matrix and finds start and end points
-    processInputMatrix: function(Matrix) {
-        // Copy Matrix
-        this.Matrix = Matrix.map(function(arr) {
-            return arr.slice();
-        });
-
-        // find start and end points
-        this.Matrix.forEach( (arr, i) => {
-            arr.forEach((type, j) => {
-                if (type == Types.start_point)
-                    this.start_point = [i, j];
-                else if (type == Types.end_point)
-                    this.end_point = [i, j];
-            });
-        });
-    }
 }
